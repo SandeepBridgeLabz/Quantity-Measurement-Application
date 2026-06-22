@@ -17,7 +17,9 @@ class QuantityMeasurementAppTest {
 
         // When & Then
         assertTrue(feet1.equals(feet2),
+
                 "1.0 ft should be equal to 1.0 ft");
+
     }
 
     @Test
