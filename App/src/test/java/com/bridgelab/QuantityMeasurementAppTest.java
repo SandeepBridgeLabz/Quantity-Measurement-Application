@@ -3,81 +3,105 @@ package com.bridgelab;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class QuantityMeasurementAppTest {
 
-    // FEET TESTS
-
     @Test
-    void testFeetEquality_SameValue() {
-        assertTrue(
-                QuantityMeasurementApp.areFeetEqual(1.0, 1.0));
+    void testEquality_FeetToFeet_SameValue() {
+
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.FEET);
+
+        QuantityLength q2 =
+                new QuantityLength(1, LengthUnit.FEET);
+
+        assertEquals(q1, q2);
     }
 
     @Test
-    void testFeetEquality_DifferentValue() {
-        assertFalse(
-                QuantityMeasurementApp.areFeetEqual(1.0, 2.0));
+    void testEquality_InchToInch_SameValue() {
+
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.INCH);
+
+        QuantityLength q2 =
+                new QuantityLength(1, LengthUnit.INCH);
+
+        assertEquals(q1, q2);
     }
 
     @Test
-    void testFeetEquality_NullComparison() {
-        QuantityMeasurementApp.Feet feet =
-                new QuantityMeasurementApp.Feet(1.0);
+    void testEquality_FeetToInch_EquivalentValue() {
 
-        assertFalse(feet.equals(null));
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.FEET);
+
+        QuantityLength q2 =
+                new QuantityLength(12, LengthUnit.INCH);
+
+        assertEquals(q1, q2);
     }
 
     @Test
-    void testFeetEquality_NonNumericInput() {
-        QuantityMeasurementApp.Feet feet =
-                new QuantityMeasurementApp.Feet(1.0);
+    void testEquality_InchToFeet_EquivalentValue() {
 
-        assertFalse(feet.equals("ABC"));
+        QuantityLength q1 =
+                new QuantityLength(12, LengthUnit.INCH);
+
+        QuantityLength q2 =
+                new QuantityLength(1, LengthUnit.FEET);
+
+        assertEquals(q1, q2);
     }
 
     @Test
-    void testFeetEquality_SameReference() {
-        QuantityMeasurementApp.Feet feet =
-                new QuantityMeasurementApp.Feet(1.0);
+    void testEquality_FeetToFeet_DifferentValue() {
 
-        assertTrue(feet.equals(feet));
-    }
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.FEET);
 
-    // INCHES TESTS
+        QuantityLength q2 =
+                new QuantityLength(2, LengthUnit.FEET);
 
-    @Test
-    void testInchesEquality_SameValue() {
-        assertTrue(
-                QuantityMeasurementApp.areInchesEqual(1.0, 1.0));
+        assertNotEquals(q1, q2);
     }
 
     @Test
-    void testInchesEquality_DifferentValue() {
-        assertFalse(
-                QuantityMeasurementApp.areInchesEqual(1.0, 2.0));
+    void testEquality_InchToInch_DifferentValue() {
+
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.INCH);
+
+        QuantityLength q2 =
+                new QuantityLength(2, LengthUnit.INCH);
+
+        assertNotEquals(q1, q2);
     }
 
     @Test
-    void testInchesEquality_NullComparison() {
-        QuantityMeasurementApp.Inches inch =
-                new QuantityMeasurementApp.Inches(1.0);
+    void testEquality_SameReference() {
 
-        assertFalse(inch.equals(null));
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.FEET);
+
+        assertEquals(q1, q1);
     }
 
     @Test
-    void testInchesEquality_NonNumericInput() {
-        QuantityMeasurementApp.Inches inch =
-                new QuantityMeasurementApp.Inches(1.0);
+    void testEquality_NullComparison() {
 
-        assertFalse(inch.equals("ABC"));
+        QuantityLength q1 =
+                new QuantityLength(1, LengthUnit.FEET);
+
+        assertNotEquals(q1, null);
     }
 
     @Test
-    void testInchesEquality_SameReference() {
-        QuantityMeasurementApp.Inches inch =
-                new QuantityMeasurementApp.Inches(1.0);
+    void testEquality_NullUnit() {
 
-        assertTrue(inch.equals(inch));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new QuantityLength(1, null)
+        );
     }
 }

@@ -1,81 +1,23 @@
 package com.bridgelab;
 
-/**
- * Hello world!
- *
- */
 public class QuantityMeasurementApp {
-
-    public static class Feet {
-        private final double value;
-
-        public Feet(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-
-            if (obj == null || getClass() != obj.getClass())
-                return false;
-
-            Feet other = (Feet) obj;
-
-            return Double.compare(value, other.value) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Double.hashCode(value);
-        }
-    }
-
-    public static class Inches {
-        private final double value;
-
-        public Inches(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-
-            if (obj == null || getClass() != obj.getClass())
-                return false;
-
-            Inches other = (Inches) obj;
-
-            return Double.compare(value, other.value) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Double.hashCode(value);
-        }
-    }
-
-    public static boolean areFeetEqual(double value1, double value2) {
-        Feet feet1 = new Feet(value1);
-        Feet feet2 = new Feet(value2);
-        return feet1.equals(feet2);
-    }
-
-    public static boolean areInchesEqual(double value1, double value2) {
-        Inches inch1 = new Inches(value1);
-        Inches inch2 = new Inches(value2);
-        return inch1.equals(inch2);
-    }
 
     public static void main(String[] args) {
 
-        System.out.println("Feet Equality : "
-                + areFeetEqual(1.0, 1.0));
+        QuantityLength feet =
+                new QuantityLength(1.0, LengthUnit.FEET);
 
-        System.out.println("Inches Equality : "
-                + areInchesEqual(1.0, 1.0));
+        QuantityLength inch =
+                new QuantityLength(12.0, LengthUnit.INCH);
+
+        System.out.println(feet.equals(inch));
+
+        QuantityLength inch1 =
+                new QuantityLength(1.0, LengthUnit.INCH);
+
+        QuantityLength inch2 =
+                new QuantityLength(1.0, LengthUnit.INCH);
+
+        System.out.println(inch1.equals(inch2));
     }
 }
