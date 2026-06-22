@@ -10,7 +10,7 @@ public class QuantityMeasurementApp {
     /**
      * Overloaded Method #1
      *
-     * Converts raw value.
+     * Converts raw value
      */
     public static void demonstrateLengthConversion(
             double value,
