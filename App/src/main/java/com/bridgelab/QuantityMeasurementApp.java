@@ -6,32 +6,19 @@ public class QuantityMeasurementApp {
             Length length1,
             Length length2) {
 
-        boolean result = length1.equals(length2);
-
-        if (result)
-            System.out.println(
-                    "The two length measurements are equal.");
-        else
-            System.out.println(
-                    "The two length measurements are not equal.");
-
-        return result;
-    }
-
-    public static boolean demonstrateLengthComparison(
-            Length length1,
-            Length length2) {
-
-        return demonstrateLengthEquality(length1, length2);
+        return length1.equals(length2);
     }
 
     public static Length demonstrateLengthConversion(
             Length length,
-            Length.LengthUnit targetUnit) {
+            Length.LengthUnit toUnit) {
 
-        return length.convertTo(targetUnit);
+        return length.convertTo(toUnit);
     }
 
+    /**
+     * UC6
+     */
     public static Length demonstrateLengthAddition(
             Length length1,
             Length length2) {
@@ -39,17 +26,105 @@ public class QuantityMeasurementApp {
         return length1.add(length2);
     }
 
+    /**
+     * UC7
+     */
+    public static Length demonstrateLengthAddition(
+            Length length1,
+            Length length2,
+            Length.LengthUnit targetUnit) {
+
+        if (length1 == null ||
+                length2 == null ||
+                targetUnit == null) {
+
+            throw new IllegalArgumentException(
+                    "Arguments cannot be null.");
+        }
+
+        return length1.add(
+                length2,
+                targetUnit);
+    }
+
     public static void main(String[] args) {
 
-        Length length1 =
-                new Length(1.0, Length.LengthUnit.FEET);
+        Length oneFoot =
+                new Length(
+                        1.0,
+                        Length.LengthUnit.FEET);
 
-        Length length2 =
-                new Length(12.0, Length.LengthUnit.INCHES);
+        Length twelveInches =
+                new Length(
+                        12.0,
+                        Length.LengthUnit.INCHES);
 
-        Length result =
-                demonstrateLengthAddition(length1, length2);
+        System.out.println(
+                demonstrateLengthAddition(
+                        oneFoot,
+                        twelveInches,
+                        Length.LengthUnit.FEET));
 
-        System.out.println(result);
+        System.out.println(
+                demonstrateLengthAddition(
+                        oneFoot,
+                        twelveInches,
+                        Length.LengthUnit.INCHES));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        oneFoot,
+                        twelveInches,
+                        Length.LengthUnit.YARDS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        new Length(
+                                1.0,
+                                Length.LengthUnit.YARDS),
+                        new Length(
+                                3.0,
+                                Length.LengthUnit.FEET),
+                        Length.LengthUnit.YARDS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        new Length(
+                                36.0,
+                                Length.LengthUnit.INCHES),
+                        new Length(
+                                1.0,
+                                Length.LengthUnit.YARDS),
+                        Length.LengthUnit.FEET));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        new Length(
+                                2.54,
+                                Length.LengthUnit.CENTIMETERS),
+                        new Length(
+                                1.0,
+                                Length.LengthUnit.INCHES),
+                        Length.LengthUnit.CENTIMETERS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        new Length(
+                                5.0,
+                                Length.LengthUnit.FEET),
+                        new Length(
+                                0.0,
+                                Length.LengthUnit.INCHES),
+                        Length.LengthUnit.YARDS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        new Length(
+                                5.0,
+                                Length.LengthUnit.FEET),
+                        new Length(
+                                -2.0,
+                                Length.LengthUnit.FEET),
+                        Length.LengthUnit.INCHES));
     }
 }

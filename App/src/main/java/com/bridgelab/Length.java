@@ -1,17 +1,22 @@
 package com.bridgelab;
 
+import java.util.Objects;
+
 public class Length {
 
-    private static final double EPSILON = 0.0001;
+    private final double value;
+    private final LengthUnit unit;
 
-    private double value;
-    private LengthUnit unit;
-
+    /**
+     * Length units.
+     * Conversion factors are relative to FEET.
+     */
     public enum LengthUnit {
-        INCHES(1.0),
-        FEET(12.0),
-        YARDS(36.0),
-        CENTIMETERS(0.393701);
+
+        FEET(1.0),
+        INCHES(1.0 / 12.0),
+        YARDS(3.0),
+        CENTIMETERS(0.0328084);
 
         private final double conversionFactor;
 
@@ -24,83 +29,21 @@ public class Length {
         }
     }
 
+    /**
+     * Constructor
+     */
     public Length(double value, LengthUnit unit) {
+
         if (unit == null) {
-            throw new IllegalArgumentException("Unit cannot be null");
+            throw new IllegalArgumentException("Unit cannot be null.");
         }
 
         if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Invalid value");
+            throw new IllegalArgumentException("Value must be finite.");
         }
 
         this.value = value;
         this.unit = unit;
-    }
-
-    private double convertToBaseUnit() {
-        return value * unit.getConversionFactor();
-    }
-
-    private boolean compare(Length thatLength) {
-        double thisInInches = this.convertToBaseUnit();
-        double thatInInches = thatLength.convertToBaseUnit();
-
-        return Math.abs(thisInInches - thatInInches) < EPSILON;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (this == obj)
-            return true;
-
-        if (obj == null || !(obj instanceof Length))
-            return false;
-
-        Length thatLength = (Length) obj;
-        return compare(thatLength);
-    }
-
-    public Length convertTo(LengthUnit targetUnit) {
-
-        if (targetUnit == null) {
-            throw new IllegalArgumentException("Target unit cannot be null");
-        }
-
-        double lengthInInches = convertToBaseUnit();
-
-        double convertedValue =
-                convertFromBaseToTargetUnit(lengthInInches, targetUnit);
-
-        return new Length(convertedValue, targetUnit);
-    }
-
-    public Length add(Length thatLength) {
-
-        if (thatLength == null) {
-            throw new IllegalArgumentException(
-                    "Second length cannot be null");
-        }
-
-        double thisInInches = this.convertToBaseUnit();
-        double thatInInches = thatLength.convertToBaseUnit();
-
-        double sumInInches = thisInInches + thatInInches;
-
-        double result =
-                convertFromBaseToTargetUnit(sumInInches, this.unit);
-
-        return new Length(result, this.unit);
-    }
-
-    private double convertFromBaseToTargetUnit(
-            double lengthInInches,
-            LengthUnit targetUnit) {
-
-        double converted =
-                lengthInInches / targetUnit.getConversionFactor();
-
-        return Math.round(converted * 100.0) / 100.0;
     }
 
     public double getValue() {
@@ -111,18 +54,164 @@ public class Length {
         return unit;
     }
 
+    /**
+     * Convert current length to base unit (FEET).
+     */
+    private double convertToBaseUnit() {
+        return value * unit.getConversionFactor();
+    }
+
+    /**
+     * Equality comparison in base unit.
+     */
+    private boolean compare(Length thatLength) {
+
+        double thisFeet = this.convertToBaseUnit();
+        double thatFeet = thatLength.convertToBaseUnit();
+
+        double epsilon = 0.0001;
+
+        return Math.abs(thisFeet - thatFeet) < epsilon;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+
+        if (!(o instanceof Length))
+            return false;
+
+        Length that = (Length) o;
+
+        return compare(that);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                Math.round(convertToBaseUnit() * 10000));
+    }
+
+    /**
+     * Convert length to target unit.
+     */
+    public Length convertTo(LengthUnit targetUnit) {
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException(
+                    "Target unit cannot be null.");
+        }
+
+        double lengthInFeet = convertToBaseUnit();
+
+        double targetValue =
+                lengthInFeet /
+                        targetUnit.getConversionFactor();
+
+        return new Length(targetValue, targetUnit);
+    }
+
+    /**
+     * UC6
+     * Add and return result in first operand's unit.
+     */
+    public Length add(Length thatLength) {
+
+        if (thatLength == null) {
+            throw new IllegalArgumentException(
+                    "Length cannot be null.");
+        }
+
+        return addAndConvert(thatLength, this.unit);
+    }
+
+    /**
+     * UC7
+     * Add and return result in specified target unit.
+     */
+    public Length add(
+            Length length,
+            LengthUnit targetUnit) {
+
+        if (length == null) {
+            throw new IllegalArgumentException(
+                    "Length cannot be null.");
+        }
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException(
+                    "Target unit cannot be null.");
+        }
+
+        return addAndConvert(length, targetUnit);
+    }
+
+    /**
+     * Private utility method.
+     */
+    private Length addAndConvert(
+            Length length,
+            LengthUnit targetUnit) {
+
+        double thisInFeet =
+                this.convertToBaseUnit();
+
+        double thatInFeet =
+                length.convertToBaseUnit();
+
+        double sumInFeet =
+                thisInFeet + thatInFeet;
+
+        double result =
+                convertFromBaseToTargetUnit(
+                        sumInFeet,
+                        targetUnit);
+
+        return new Length(result, targetUnit);
+    }
+
+    /**
+     * Convert feet to target unit.
+     */
+    private double convertFromBaseToTargetUnit(
+            double lengthInFeet,
+            LengthUnit targetUnit) {
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException(
+                    "Target unit cannot be null.");
+        }
+
+        return lengthInFeet /
+                targetUnit.getConversionFactor();
+    }
+
     @Override
     public String toString() {
-        return "Quantity(" + value + ", " + unit + ")";
+        return "Quantity(" +
+                value +
+                ", " +
+                unit +
+                ")";
     }
 
     public static void main(String[] args) {
 
-        Length length1 = new Length(1.0, LengthUnit.FEET);
-        Length length2 = new Length(12.0, LengthUnit.INCHES);
+        Length l1 =
+                new Length(1, LengthUnit.FEET);
 
-        Length result = length1.add(length2);
+        Length l2 =
+                new Length(12, LengthUnit.INCHES);
 
-        System.out.println(result);
+        System.out.println(
+                l1.add(l2, LengthUnit.FEET));
+
+        System.out.println(
+                l1.add(l2, LengthUnit.INCHES));
+
+        System.out.println(
+                l1.add(l2, LengthUnit.YARDS));
     }
 }
