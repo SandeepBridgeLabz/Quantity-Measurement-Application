@@ -2,62 +2,97 @@ package com.bridgelab;
 
 public class QuantityMeasurementApp {
 
+    public static <U extends IMeasurable>
+    void demonstrateEquality(
+            Quantity<U> q1,
+            Quantity<U> q2) {
+
+        System.out.println(
+                q1 + " equals " + q2
+                        + " : "
+                        + q1.equals(q2)
+        );
+    }
+
+    public static <U extends IMeasurable>
+    void demonstrateConversion(
+            Quantity<U> quantity,
+            U targetUnit) {
+
+        System.out.println(
+                quantity
+                        + " -> "
+                        + quantity.convertTo(targetUnit)
+        );
+    }
+
+    public static <U extends IMeasurable>
+    void demonstrateAddition(
+            Quantity<U> q1,
+            Quantity<U> q2,
+            U targetUnit) {
+
+        System.out.println(
+                q1
+                        + " + "
+                        + q2
+                        + " = "
+                        + q1.add(q2, targetUnit)
+        );
+    }
+
     public static void main(String[] args) {
 
-        QuantityWeight kg =
-                new QuantityWeight(1.0,
+        // LENGTH
+        Quantity<LengthUnit> foot =
+                new Quantity<>(1,
+                        LengthUnit.FEET);
+
+        Quantity<LengthUnit> inch =
+                new Quantity<>(12,
+                        LengthUnit.INCHES);
+
+        demonstrateEquality(
+                foot,
+                inch
+        );
+
+        demonstrateConversion(
+                foot,
+                LengthUnit.INCHES
+        );
+
+        demonstrateAddition(
+                foot,
+                inch,
+                LengthUnit.FEET
+        );
+
+        System.out.println();
+
+        // WEIGHT
+        Quantity<WeightUnit> kg =
+                new Quantity<>(1,
                         WeightUnit.KILOGRAM);
 
-        QuantityWeight gram =
-                new QuantityWeight(1000.0,
+        Quantity<WeightUnit> gram =
+                new Quantity<>(1000,
                         WeightUnit.GRAM);
 
-        QuantityWeight pound =
-                new QuantityWeight(2.20462,
-                        WeightUnit.POUND);
+        demonstrateEquality(
+                kg,
+                gram
+        );
 
-        // Equality
-        System.out.println("1kg = 1000g : "
-                + kg.equals(gram));
+        demonstrateConversion(
+                kg,
+                WeightUnit.GRAM
+        );
 
-        System.out.println("1kg = 2.20462lb : "
-                + kg.equals(pound));
-
-        // Conversion
-        System.out.println(
-                kg.convertTo(WeightUnit.GRAM));
-
-        System.out.println(
-                gram.convertTo(WeightUnit.POUND));
-
-        // Addition
-        QuantityWeight result1 =
-                kg.add(gram);
-
-        System.out.println(
-                "1kg + 1000g = "
-                        + result1);
-
-        QuantityWeight result2 =
-                kg.add(gram,
-                        WeightUnit.GRAM);
-
-        System.out.println(
-                "1kg + 1000g in grams = "
-                        + result2);
-
-        QuantityWeight result3 =
-                new QuantityWeight(
-                        2.0,
-                        WeightUnit.KILOGRAM)
-                        .add(
-                                new QuantityWeight(
-                                        4.0,
-                                        WeightUnit.POUND),
-                                WeightUnit.KILOGRAM);
-
-        System.out.println(
-                "2kg + 4lb = "
-                        + result3);
+        demonstrateAddition(
+                kg,
+                gram,
+                WeightUnit.KILOGRAM
+        );
     }
 }
