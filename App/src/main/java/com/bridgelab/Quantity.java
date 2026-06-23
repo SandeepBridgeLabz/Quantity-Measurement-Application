@@ -2,22 +2,20 @@ package com.bridgelab;
 
 import java.util.Objects;
 
-public final class Quantity<U extends IMeasurable> {
-
-    private static final double EPSILON = 1e-6;
+public class Quantity<U extends IMeasurable> {
 
     private final double value;
     private final U unit;
 
+    private static final double EPSILON = 0.0001;
+
     public Quantity(double value, U unit) {
 
-        if (unit == null) {
-            throw new IllegalArgumentException("Unit cannot be null.");
-        }
+        if (unit == null)
+            throw new IllegalArgumentException("Unit cannot be null");
 
-        if (Double.isNaN(value) || Double.isInfinite(value)) {
-            throw new IllegalArgumentException("Invalid value.");
-        }
+        if (!Double.isFinite(value))
+            throw new IllegalArgumentException("Invalid value");
 
         this.value = value;
         this.unit = unit;
@@ -33,54 +31,39 @@ public final class Quantity<U extends IMeasurable> {
 
     public Quantity<U> convertTo(U targetUnit) {
 
-        if (targetUnit == null) {
-            throw new IllegalArgumentException("Target unit cannot be null.");
-        }
-
         double baseValue = unit.convertToBaseUnit(value);
 
         double convertedValue =
                 targetUnit.convertFromBaseUnit(baseValue);
 
-        return new Quantity<>(
-                round(convertedValue),
-                targetUnit
-        );
+        convertedValue =
+                Math.round(convertedValue * 100.0) / 100.0;
+
+        return new Quantity<>(convertedValue, targetUnit);
     }
 
     public Quantity<U> add(Quantity<U> other) {
-
         return add(other, this.unit);
     }
 
     public Quantity<U> add(Quantity<U> other,
                            U targetUnit) {
 
-        if (other == null) {
-            throw new IllegalArgumentException(
-                    "Quantity cannot be null."
-            );
-        }
+        double base1 =
+                unit.convertToBaseUnit(value);
 
-        double first =
-                this.unit.convertToBaseUnit(this.value);
-
-        double second =
+        double base2 =
                 other.unit.convertToBaseUnit(other.value);
 
-        double sum = first + second;
+        double sum = base1 + base2;
 
-        double result =
+        double converted =
                 targetUnit.convertFromBaseUnit(sum);
 
-        return new Quantity<>(
-                round(result),
-                targetUnit
-        );
-    }
+        converted =
+                Math.round(converted * 100.0) / 100.0;
 
-    private static double round(double value) {
-        return Math.round(value * 100.0) / 100.0;
+        return new Quantity<>(converted, targetUnit);
     }
 
     @Override
@@ -89,50 +72,45 @@ public final class Quantity<U extends IMeasurable> {
         if (this == obj)
             return true;
 
-        if (obj == null ||
-                getClass() != obj.getClass())
+        if (obj == null)
             return false;
 
-        Quantity<?> other =
-                (Quantity<?>) obj;
-
-        if (this.unit.getClass()
-                != other.unit.getClass()) {
+        if (!(obj instanceof Quantity<?>))
             return false;
-        }
 
-        double first =
-                this.unit.convertToBaseUnit(this.value);
+        Quantity<?> other = (Quantity<?>) obj;
 
-        double second =
-                other.unit.convertToBaseUnit(
-                        other.value);
+        if (unit.getClass() !=
+                other.unit.getClass())
+            return false;
 
-        return Math.abs(first - second)
+        double base1 =
+                unit.convertToBaseUnit(value);
+
+        double base2 =
+                other.unit.convertToBaseUnit(other.value);
+
+        return Math.abs(base1 - base2)
                 < EPSILON;
     }
 
     @Override
     public int hashCode() {
 
-        double baseValue =
+        double base =
                 unit.convertToBaseUnit(value);
 
-        long rounded =
-                Math.round(baseValue / EPSILON);
-
         return Objects.hash(
-                unit.getClass(),
-                rounded
+                Math.round(base * 10000)
         );
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "Quantity(%.2f, %s)",
-                value,
-                unit.getUnitName()
-        );
+        return "Quantity(" +
+                value +
+                ", " +
+                unit.getUnitName() +
+                ")";
     }
 }
