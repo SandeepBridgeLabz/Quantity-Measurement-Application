@@ -2,82 +2,62 @@ package com.bridgelab;
 
 public class QuantityMeasurementApp {
 
-    public static boolean demonstrateLengthEquality(
-            Length length1,
-            Length length2) {
-
-        return length1.equals(length2);
-    }
-
-    public static boolean demonstrateLengthComparison(
-            double value1,
-            LengthUnit unit1,
-            double value2,
-            LengthUnit unit2) {
-
-        Length first =
-                new Length(value1, unit1);
-
-        Length second =
-                new Length(value2, unit2);
-
-        return first.equals(second);
-    }
-
-    public static Length demonstrateLengthConversion(
-            double value,
-            LengthUnit fromUnit,
-            LengthUnit toUnit) {
-
-        Length length =
-                new Length(value, fromUnit);
-
-        return length.convertTo(toUnit);
-    }
-
-    public static Length demonstrateLengthConversion(
-            Length length,
-            LengthUnit toUnit) {
-
-        return length.convertTo(toUnit);
-    }
-
-    public static Length demonstrateLengthAddition(
-            Length length1,
-            Length length2) {
-
-        return length1.add(length2);
-    }
-
-    public static Length demonstrateLengthAddition(
-            Length length1,
-            Length length2,
-            LengthUnit targetUnit) {
-
-        return length1.add(length2, targetUnit);
-    }
-
     public static void main(String[] args) {
 
+        QuantityWeight kg =
+                new QuantityWeight(1.0,
+                        WeightUnit.KILOGRAM);
+
+        QuantityWeight gram =
+                new QuantityWeight(1000.0,
+                        WeightUnit.GRAM);
+
+        QuantityWeight pound =
+                new QuantityWeight(2.20462,
+                        WeightUnit.POUND);
+
+        // Equality
+        System.out.println("1kg = 1000g : "
+                + kg.equals(gram));
+
+        System.out.println("1kg = 2.20462lb : "
+                + kg.equals(pound));
+
+        // Conversion
         System.out.println(
-                demonstrateLengthConversion(
-                        1,
-                        LengthUnit.FEET,
-                        LengthUnit.INCHES));
+                kg.convertTo(WeightUnit.GRAM));
 
         System.out.println(
-                demonstrateLengthAddition(
-                        new Length(1,
-                                LengthUnit.FEET),
-                        new Length(12,
-                                LengthUnit.INCHES),
-                        LengthUnit.FEET));
+                gram.convertTo(WeightUnit.POUND));
+
+        // Addition
+        QuantityWeight result1 =
+                kg.add(gram);
 
         System.out.println(
-                demonstrateLengthEquality(
-                        new Length(36,
-                                LengthUnit.INCHES),
-                        new Length(1,
-                                LengthUnit.YARDS)));
+                "1kg + 1000g = "
+                        + result1);
+
+        QuantityWeight result2 =
+                kg.add(gram,
+                        WeightUnit.GRAM);
+
+        System.out.println(
+                "1kg + 1000g in grams = "
+                        + result2);
+
+        QuantityWeight result3 =
+                new QuantityWeight(
+                        2.0,
+                        WeightUnit.KILOGRAM)
+                        .add(
+                                new QuantityWeight(
+                                        4.0,
+                                        WeightUnit.POUND),
+                                WeightUnit.KILOGRAM);
+
+        System.out.println(
+                "2kg + 4lb = "
+                        + result3);
     }
 }
