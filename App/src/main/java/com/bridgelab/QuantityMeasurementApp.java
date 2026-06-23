@@ -1,153 +1,42 @@
 package com.bridgelab;
 
+import com.bridgelab.*;
 
-/**
- * Application class demonstrating
- * length comparison and conversion.
- */
-public class QuantityMeasurementApp {
+public class QuantityMeasurementApp{
 
-    /**
-     * Overloaded Method #1
-     *
-     * Converts raw value
-     */
-    public static void demonstrateLengthConversion(
-            double value,
-            LengthUnit fromUnit,
-            LengthUnit toUnit) {
+    public static boolean demonstrateLengthEquality(Length length1, Length length2){
+        boolean result=length1.equals(length2);
 
-        double result =
-                QuantityLength.convert(
-                        value,
-                        fromUnit,
-                        toUnit);
+        if(result)
+            System.out.println("The two length measurements are equal.");
+        else
+            System.out.println("The two length measurements are not equal.");
 
-        System.out.println(
-                value + " " + fromUnit
-                        + " = "
-                        + result + " "
-                        + toUnit);
+        return result;
     }
 
-    /**
-     * Overloaded Method #2
-     *
-     * Converts existing object.
-     */
-    public static void demonstrateLengthConversion(
-            QuantityLength length,
-            LengthUnit toUnit) {
+    public static boolean demonstrateLengthComparison(double value1,Length.LengthUnit unit1,double value2,Length.LengthUnit unit2){
+        Length length1=new Length(value1,unit1);
+        Length length2=new Length(value2,unit2);
 
-        QuantityLength converted =
-                length.convertTo(toUnit);
-
-        System.out.println(
-                length + " = "
-                        + converted);
+        return demonstrateLengthEquality(length1,length2);
     }
 
-    /**
-     * Demonstrates equality.
-     */
-    public static void demonstrateLengthEquality(
-            QuantityLength first,
-            QuantityLength second) {
-
-        System.out.println(
-                first + " and "
-                        + second
-                        + " are equal : "
-                        + first.equals(second));
+    public static Length demonstrateLengthConversion(double value,Length.LengthUnit fromUnit,Length.LengthUnit toUnit){
+        Length length=new Length(value,fromUnit);
+        return length.convertTo(toUnit);
     }
 
-    /**
-     * Demonstrates comparison.
-     */
-    public static void demonstrateLengthComparison(
-            double value1,
-            LengthUnit unit1,
-            double value2,
-            LengthUnit unit2) {
-
-        QuantityLength length1 =
-                new QuantityLength(
-                        value1,
-                        unit1);
-
-        QuantityLength length2 =
-                new QuantityLength(
-                        value2,
-                        unit2);
-
-        demonstrateLengthEquality(
-                length1,
-                length2);
+    public static Length demonstrateLengthConversion(Length length,Length.LengthUnit toUnit){
+        return length.convertTo(toUnit);
     }
 
-    /**
-     * Main method for standalone testing.
-     */
-    public static void main(String[] args) {
+    public static void main(String[] args){
+        Length lengthInInches=demonstrateLengthConversion(3.0,Length.LengthUnit.FEET,Length.LengthUnit.INCHES);
+        System.out.println(lengthInInches);
 
-        System.out.println(
-                "===== Unit Conversion =====");
-
-        demonstrateLengthConversion(
-                1.0,
-                LengthUnit.FEET,
-                LengthUnit.INCHES);
-
-        demonstrateLengthConversion(
-                3.0,
-                LengthUnit.YARDS,
-                LengthUnit.FEET);
-
-        demonstrateLengthConversion(
-                36.0,
-                LengthUnit.INCHES,
-                LengthUnit.YARDS);
-
-        demonstrateLengthConversion(
-                2.54,
-                LengthUnit.CENTIMETERS,
-                LengthUnit.INCHES);
-
-        System.out.println();
-
-        System.out.println(
-                "===== Object Conversion =====");
-
-        QuantityLength length =
-                new QuantityLength(
-                        1.0,
-                        LengthUnit.YARDS);
-
-        demonstrateLengthConversion(
-                length,
-                LengthUnit.INCHES);
-
-        System.out.println();
-
-        System.out.println(
-                "===== Equality Tests =====");
-
-        demonstrateLengthComparison(
-                1.0,
-                LengthUnit.FEET,
-                12.0,
-                LengthUnit.INCHES);
-
-        demonstrateLengthComparison(
-                1.0,
-                LengthUnit.YARDS,
-                3.0,
-                LengthUnit.FEET);
-
-        demonstrateLengthComparison(
-                2.54,
-                LengthUnit.CENTIMETERS,
-                1.0,
-                LengthUnit.INCHES);
+        Length lengthInYards=new Length(2.0,Length.LengthUnit.YARDS);
+        Length converted=demonstrateLengthConversion(lengthInYards,Length.LengthUnit.INCHES);
+        System.out.println(converted);
     }
 }
