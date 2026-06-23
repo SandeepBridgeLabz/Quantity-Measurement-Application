@@ -2,122 +2,116 @@ package com.bridgelab;
 
 public class QuantityMeasurementApp {
 
+    // Subtraction Demo
     public static <U extends IMeasurable>
-    void demonstrateEquality(
-            Quantity<U> q1,
-            Quantity<U> q2) {
+    void demonstrateSubtraction(
+            Quantity<U> first,
+            Quantity<U> second,
+            U targetUnit
+    ) {
 
         System.out.println(
-                q1 + " == " + q2 +
-                        " : " + q1.equals(q2)
+                first + ".subtract(" +
+                        second + ", " +
+                        targetUnit + ") => " +
+                        first.subtract(
+                                second,
+                                targetUnit
+                        )
         );
+
+        System.out.println();
     }
 
+    // Division Demo
     public static <U extends IMeasurable>
-    void demonstrateConversion(
-            Quantity<U> q,
-            U targetUnit) {
+    void demonstrateDivision(
+            Quantity<U> first,
+            Quantity<U> second
+    ) {
 
         System.out.println(
-                q +
-                        " -> " +
-                        q.convertTo(targetUnit)
+                first + ".divide(" +
+                        second + ") => " +
+                        first.divide(second)
         );
-    }
 
-    public static <U extends IMeasurable>
-    void demonstrateAddition(
-            Quantity<U> q1,
-            Quantity<U> q2,
-            U targetUnit) {
-
-        System.out.println(
-                q1 +
-                        " + " +
-                        q2 +
-                        " = " +
-                        q1.add(q2, targetUnit)
-        );
+        System.out.println();
     }
 
     public static void main(String[] args) {
 
-        // LENGTH
+        // Length Subtraction
+        demonstrateSubtraction(
+                new Quantity<>(
+                        10.0,
+                        LengthUnit.FEET
+                ),
+                new Quantity<>(
+                        6.0,
+                        LengthUnit.INCHES
+                ),
+                LengthUnit.FEET
+        );
 
-        Quantity<LengthUnit> foot =
-                new Quantity<>(1.0,
-                        LengthUnit.FEET);
+        // Weight Subtraction
+        demonstrateSubtraction(
+                new Quantity<>(
+                        10.0,
+                        WeightUnit.KILOGRAM
+                ),
+                new Quantity<>(
+                        5000.0,
+                        WeightUnit.GRAM
+                ),
+                WeightUnit.KILOGRAM
+        );
 
-        Quantity<LengthUnit> inch =
-                new Quantity<>(12.0,
-                        LengthUnit.INCHES);
+        // Volume Subtraction
+        demonstrateSubtraction(
+                new Quantity<>(
+                        5.0,
+                        VolumeUnit.LITRE
+                ),
+                new Quantity<>(
+                        500.0,
+                        VolumeUnit.MILLILITRE
+                ),
+                VolumeUnit.LITRE
+        );
 
-        demonstrateEquality(foot, inch);
+        // Division Operations
+        demonstrateDivision(
+                new Quantity<>(
+                        10.0,
+                        LengthUnit.FEET
+                ),
+                new Quantity<>(
+                        2.0,
+                        LengthUnit.FEET
+                )
+        );
 
-        demonstrateConversion(
-                foot,
-                LengthUnit.INCHES);
+        demonstrateDivision(
+                new Quantity<>(
+                        24.0,
+                        LengthUnit.INCHES
+                ),
+                new Quantity<>(
+                        2.0,
+                        LengthUnit.FEET
+                )
+        );
 
-        demonstrateAddition(
-                foot,
-                inch,
-                LengthUnit.FEET);
-
-        // WEIGHT
-
-        Quantity<WeightUnit> kg =
-                new Quantity<>(1.0,
-                        WeightUnit.KILOGRAM);
-
-        Quantity<WeightUnit> gram =
-                new Quantity<>(1000.0,
-                        WeightUnit.GRAM);
-
-        demonstrateEquality(kg, gram);
-
-        demonstrateConversion(
-                kg,
-                WeightUnit.GRAM);
-
-        demonstrateAddition(
-                kg,
-                gram,
-                WeightUnit.KILOGRAM);
-
-        // VOLUME (UC11)
-
-        Quantity<VolumeUnit> litre =
-                new Quantity<>(1.0,
-                        VolumeUnit.LITRE);
-
-        Quantity<VolumeUnit> ml =
-                new Quantity<>(1000.0,
-                        VolumeUnit.MILLILITRE);
-
-        Quantity<VolumeUnit> gallon =
-                new Quantity<>(1.0,
-                        VolumeUnit.GALLON);
-
-        demonstrateEquality(
-                litre,
-                ml);
-
-        demonstrateConversion(
-                litre,
-                VolumeUnit.MILLILITRE);
-
-        demonstrateConversion(
-                gallon,
-                VolumeUnit.LITRE);
-
-        demonstrateAddition(
-                litre,
-                ml,
-                VolumeUnit.LITRE);
-
-        demonstrateAddition(
-                gallon,
-                litre,
-                VolumeUnit.GALLON);
+        demonstrateDivision(
+                new Quantity<>(
+                        10.0,
+                        WeightUnit.KILOGRAM
+                ),
+                new Quantity<>(
+                        5.0,
+                        WeightUnit.KILOGRAM
+                )
+        );
     }
 }

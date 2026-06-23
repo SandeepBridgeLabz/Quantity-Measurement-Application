@@ -1,16 +1,13 @@
 package com.bridgelab;
 
-public class QuantityWeight {
+public class QuantityLength {
 
     private static final double EPSILON = 0.0001;
 
     private final double value;
-    private final WeightUnit unit;
+    private final LengthUnit unit;
 
-    public QuantityWeight(
-            double value,
-            WeightUnit unit
-    ) {
+    public QuantityLength(double value, LengthUnit unit) {
 
         validateValue(value);
 
@@ -39,13 +36,13 @@ public class QuantityWeight {
         return value;
     }
 
-    public WeightUnit getUnit() {
+    public LengthUnit getUnit() {
         return unit;
     }
 
-    // Convert to another unit
-    public QuantityWeight convertTo(
-            WeightUnit targetUnit
+    // Convert to target unit
+    public QuantityLength convertTo(
+            LengthUnit targetUnit
     ) {
 
         if (targetUnit == null) {
@@ -60,24 +57,24 @@ public class QuantityWeight {
         double convertedValue =
                 targetUnit.convertFromBaseUnit(baseValue);
 
-        return new QuantityWeight(
+        return new QuantityLength(
                 convertedValue,
                 targetUnit
         );
     }
 
-    // Addition (default target = first operand unit)
-    public QuantityWeight add(
-            QuantityWeight other
+    // UC6 addition
+    public QuantityLength add(
+            QuantityLength other
     ) {
 
         return add(other, this.unit);
     }
 
-    // Addition with explicit target unit
-    public QuantityWeight add(
-            QuantityWeight other,
-            WeightUnit targetUnit
+    // UC7 addition with explicit target unit
+    public QuantityLength add(
+            QuantityLength other,
+            LengthUnit targetUnit
     ) {
 
         if (other == null) {
@@ -108,7 +105,7 @@ public class QuantityWeight {
                         totalBase
                 );
 
-        return new QuantityWeight(
+        return new QuantityLength(
                 result,
                 targetUnit
         );
@@ -127,8 +124,8 @@ public class QuantityWeight {
             return false;
         }
 
-        QuantityWeight other =
-                (QuantityWeight) obj;
+        QuantityLength other =
+                (QuantityLength) obj;
 
         double thisBase =
                 unit.convertToBaseUnit(value);
@@ -141,16 +138,6 @@ public class QuantityWeight {
         return Math.abs(
                 thisBase - otherBase
         ) < EPSILON;
-    }
-
-    // hashCode
-    @Override
-    public int hashCode() {
-
-        double baseValue =
-                unit.convertToBaseUnit(value);
-
-        return Double.hashCode(baseValue);
     }
 
     @Override
