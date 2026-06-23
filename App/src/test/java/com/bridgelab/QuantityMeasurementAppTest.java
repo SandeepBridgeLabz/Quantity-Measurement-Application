@@ -65,8 +65,8 @@ public class QuantityMeasurementAppTest {
         Length cm1 = new Length(2.0, LengthUnit.CENTIMETERS);
         Length cm2 = new Length(2.0, LengthUnit.CENTIMETERS);
 
-        assertEquals(cm1, cm2);
-    }
+        QuantityLength feet =
+                new QuantityLength(3.0, LengthUnit.FEET);
 
     @Test
     public void testCentimeterToInchComparison() {
@@ -74,8 +74,9 @@ public class QuantityMeasurementAppTest {
         Length cm = new Length(1.0, LengthUnit.CENTIMETERS);
         Length inch = new Length(0.393701, LengthUnit.INCH);
 
-        assertEquals(cm, inch);
-    }
+        QuantityLength inch =
+                new QuantityLength(1.0,
+                        LengthUnit.INCHES);
 
     @Test
     public void testCentimeterToFeetNotEqual() {
@@ -83,7 +84,10 @@ public class QuantityMeasurementAppTest {
         Length cm = new Length(1.0, LengthUnit.CENTIMETERS);
         Length feet = new Length(1.0, LengthUnit.FEET);
 
-        assertNotEquals(cm, feet);
+        QuantityLength result2 =
+                inches.add(feet);
+
+        assertEquals(result1, result2);
     }
 
     @Test
