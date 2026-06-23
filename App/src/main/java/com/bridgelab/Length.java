@@ -4,43 +4,18 @@ import java.util.Objects;
 
 public class Length {
 
+    private static final double EPSILON = 0.01;
+
     private final double value;
     private final LengthUnit unit;
 
-    /**
-     * Length units.
-     * Conversion factors are relative to FEET.
-     */
-    public enum LengthUnit {
-
-        FEET(1.0),
-        INCHES(1.0 / 12.0),
-        YARDS(3.0),
-        CENTIMETERS(0.0328084);
-
-        private final double conversionFactor;
-
-        LengthUnit(double conversionFactor) {
-            this.conversionFactor = conversionFactor;
-        }
-
-        public double getConversionFactor() {
-            return conversionFactor;
-        }
-    }
-
-    /**
-     * Constructor
-     */
     public Length(double value, LengthUnit unit) {
 
-        if (unit == null) {
-            throw new IllegalArgumentException("Unit cannot be null.");
-        }
+        if (unit == null)
+            throw new IllegalArgumentException("Unit cannot be null");
 
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Value must be finite.");
-        }
+        if (Double.isNaN(value) || Double.isInfinite(value))
+            throw new IllegalArgumentException("Invalid value");
 
         this.value = value;
         this.unit = unit;
@@ -54,164 +29,114 @@ public class Length {
         return unit;
     }
 
-    /**
-     * Convert current length to base unit (FEET).
-     */
-    private double convertToBaseUnit() {
-        return value * unit.getConversionFactor();
-    }
-
-    /**
-     * Equality comparison in base unit.
-     */
-    private boolean compare(Length thatLength) {
-
-        double thisFeet = this.convertToBaseUnit();
-        double thatFeet = thatLength.convertToBaseUnit();
-
-        double epsilon = 0.0001;
-
-        return Math.abs(thisFeet - thatFeet) < epsilon;
-    }
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object obj) {
 
-        if (this == o)
+        if (this == obj)
             return true;
 
-        if (!(o instanceof Length))
+        if (obj == null || getClass() != obj.getClass())
             return false;
 
-        Length that = (Length) o;
+        Length that = (Length) obj;
 
-        return compare(that);
+        double thisBase = convertToBaseUnit();
+        double thatBase = that.convertToBaseUnit();
+
+        return Math.abs(thisBase - thatBase) < EPSILON;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                Math.round(convertToBaseUnit() * 10000));
+        return Objects.hash(convertToBaseUnit());
     }
 
     /**
-     * Convert length to target unit.
+     * Convert to target unit
      */
     public Length convertTo(LengthUnit targetUnit) {
 
-        if (targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Target unit cannot be null.");
-        }
+        double baseValue = convertToBaseUnit();
+        double convertedValue =
+                targetUnit.convertFromBaseUnit(baseValue);
 
-        double lengthInFeet = convertToBaseUnit();
-
-        double targetValue =
-                lengthInFeet /
-                        targetUnit.getConversionFactor();
-
-        return new Length(targetValue, targetUnit);
+        return new Length(convertedValue, targetUnit);
     }
 
     /**
-     * UC6
-     * Add and return result in first operand's unit.
+     * Add and return result in current unit
      */
     public Length add(Length thatLength) {
-
-        if (thatLength == null) {
-            throw new IllegalArgumentException(
-                    "Length cannot be null.");
-        }
-
-        return addAndConvert(thatLength, this.unit);
+        return add(thatLength, this.unit);
     }
 
     /**
-     * UC7
-     * Add and return result in specified target unit.
+     * Add and return result in specified target unit
      */
-    public Length add(
-            Length length,
-            LengthUnit targetUnit) {
-
-        if (length == null) {
-            throw new IllegalArgumentException(
-                    "Length cannot be null.");
-        }
-
-        if (targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Target unit cannot be null.");
-        }
+    public Length add(Length length,
+                      LengthUnit targetUnit) {
 
         return addAndConvert(length, targetUnit);
     }
 
-    /**
-     * Private utility method.
-     */
-    private Length addAndConvert(
-            Length length,
-            LengthUnit targetUnit) {
+    private Length addAndConvert(Length length,
+                                 LengthUnit targetUnit) {
 
-        double thisInFeet =
-                this.convertToBaseUnit();
+        double first = this.convertToBaseUnit();
+        double second = length.convertToBaseUnit();
 
-        double thatInFeet =
-                length.convertToBaseUnit();
+        double total = first + second;
 
-        double sumInFeet =
-                thisInFeet + thatInFeet;
+        double converted =
+                targetUnit.convertFromBaseUnit(total);
 
-        double result =
-                convertFromBaseToTargetUnit(
-                        sumInFeet,
-                        targetUnit);
-
-        return new Length(result, targetUnit);
+        return new Length(converted, targetUnit);
     }
 
     /**
-     * Convert feet to target unit.
+     * Delegates conversion to enum
+     */
+    private double convertToBaseUnit() {
+        return unit.convertToBaseUnit(value);
+    }
+
+    /**
+     * Delegates conversion to enum
      */
     private double convertFromBaseToTargetUnit(
-            double lengthInFeet,
+            double baseValue,
             LengthUnit targetUnit) {
 
-        if (targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Target unit cannot be null.");
-        }
-
-        return lengthInFeet /
-                targetUnit.getConversionFactor();
+        return targetUnit.convertFromBaseUnit(baseValue);
     }
 
     @Override
     public String toString() {
-        return "Quantity(" +
-                value +
-                ", " +
-                unit +
-                ")";
+        return "Length{" +
+                "value=" + value +
+                ", unit=" + unit +
+                '}';
     }
 
     public static void main(String[] args) {
 
-        Length l1 =
+        Length oneFoot =
                 new Length(1, LengthUnit.FEET);
 
-        Length l2 =
+        Length twelveInches =
                 new Length(12, LengthUnit.INCHES);
 
-        System.out.println(
-                l1.add(l2, LengthUnit.FEET));
+        System.out.println(oneFoot.equals(twelveInches));
 
         System.out.println(
-                l1.add(l2, LengthUnit.INCHES));
+                oneFoot.convertTo(LengthUnit.INCHES));
 
         System.out.println(
-                l1.add(l2, LengthUnit.YARDS));
+                oneFoot.add(twelveInches));
+
+        System.out.println(
+                oneFoot.add(
+                        twelveInches,
+                        LengthUnit.YARDS));
     }
 }
