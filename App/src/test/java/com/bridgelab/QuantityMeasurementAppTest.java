@@ -378,4 +378,32 @@ public class QuantityMeasurementAppTest {
                 EPSILON
         );
     }
+
+    @Test
+    public void testTemperatureEquality_CelsiusToFahrenheit() {
+
+        assertTrue(
+                new Quantity<>(0.0, TemperatureUnit.CELSIUS)
+                        .equals(new Quantity<>(32.0, TemperatureUnit.FAHRENHEIT))
+        );
+    }
+
+    @Test
+    public void testTemperatureConversion() {
+
+        Quantity<TemperatureUnit> result =
+                new Quantity<>(100.0, TemperatureUnit.CELSIUS)
+                        .convertTo(TemperatureUnit.FAHRENHEIT);
+
+        assertEquals(212.0, result.getValue(), 0.01);
+    }
+
+    @Test
+    public void testTemperatureVsLength_NotEqual() {
+
+        assertFalse(
+                new Quantity<>(100.0, TemperatureUnit.CELSIUS)
+                        .equals(new Quantity<>(100.0, LengthUnit.FEET))
+        );
+    }
 }
