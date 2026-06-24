@@ -11,7 +11,7 @@ public class Quantity<U extends IMeasurable> {
 
     public Quantity(double value, U unit) {
 
-        validateFinite(value);
+        validateValue(value);
 
         if (unit == null) {
             throw new IllegalArgumentException(
@@ -23,46 +23,15 @@ public class Quantity<U extends IMeasurable> {
         this.unit = unit;
     }
 
-    // Arithmetic Operations Enum
-    private enum ArithmeticOperation {
+    private void validateValue(double value) {
 
-        ADD((a, b) -> a + b),
-
-        SUBTRACT((a, b) -> a - b),
-
-        DIVIDE((a, b) -> {
-
-            if (Math.abs(b) < EPSILON) {
-                throw new ArithmeticException(
-                        "Division by zero"
-                );
-            }
-
-            return a / b;
-        });
-
-        private final DoubleBinaryOperator operator;
-
-        ArithmeticOperation(
-                DoubleBinaryOperator operator
-        ) {
-
-            this.operator = operator;
-        }
-
-        public double compute(
-                double left,
-                double right
-        ) {
-
-            return operator.applyAsDouble(
-                    left,
-                    right
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException(
+                    "Value must be finite"
             );
         }
     }
 
-    // Getters
     public double getValue() {
         return value;
     }
@@ -71,30 +40,26 @@ public class Quantity<U extends IMeasurable> {
         return unit;
     }
 
-    // ---------------- CONVERSION ----------------
-
-    public Quantity<U> convertTo(
-            U targetUnit
-    ) {
+    // Convert
+    public Quantity<U> convertTo(U targetUnit) {
 
         validateTargetUnit(targetUnit);
 
         double baseValue =
                 unit.convertToBaseUnit(value);
 
-        double converted =
+        double convertedValue =
                 targetUnit.convertFromBaseUnit(
                         baseValue
                 );
 
         return new Quantity<>(
-                roundToTwoDecimals(converted),
+                round(convertedValue),
                 targetUnit
         );
     }
 
-    // ---------------- ADDITION ----------------
-
+    // Addition
     public Quantity<U> add(
             Quantity<U> other
     ) {
@@ -107,31 +72,27 @@ public class Quantity<U extends IMeasurable> {
             U targetUnit
     ) {
 
-        validateArithmeticOperands(
-                other,
-                targetUnit,
-                true
-        );
+        validateOperand(other);
+        validateTargetUnit(targetUnit);
 
-        double baseResult =
-                performBaseArithmetic(
-                        other,
-                        ArithmeticOperation.ADD
+        double result =
+                unit.convertToBaseUnit(value)
+                        + other.unit.convertToBaseUnit(
+                        other.value
                 );
 
         double converted =
                 targetUnit.convertFromBaseUnit(
-                        baseResult
+                        result
                 );
 
         return new Quantity<>(
-                roundToTwoDecimals(converted),
+                round(converted),
                 targetUnit
         );
     }
 
-    // ---------------- SUBTRACTION ----------------
-
+    // UC12 Subtraction
     public Quantity<U> subtract(
             Quantity<U> other
     ) {
@@ -144,74 +105,53 @@ public class Quantity<U extends IMeasurable> {
             U targetUnit
     ) {
 
-        validateArithmeticOperands(
-                other,
-                targetUnit,
-                true
-        );
+        validateOperand(other);
+        validateTargetUnit(targetUnit);
 
-        double baseResult =
-                performBaseArithmetic(
-                        other,
-                        ArithmeticOperation.SUBTRACT
+        double result =
+                unit.convertToBaseUnit(value)
+                        - other.unit.convertToBaseUnit(
+                        other.value
                 );
 
         double converted =
                 targetUnit.convertFromBaseUnit(
-                        baseResult
+                        result
                 );
 
         return new Quantity<>(
-                roundToTwoDecimals(converted),
+                round(converted),
                 targetUnit
         );
     }
 
-    // ---------------- DIVISION ----------------
-
+    // UC12 Division
     public double divide(
             Quantity<U> other
     ) {
 
-        validateArithmeticOperands(
-                other,
-                null,
-                false
-        );
+        validateOperand(other);
 
-        return performBaseArithmetic(
-                other,
-                ArithmeticOperation.DIVIDE
-        );
-    }
-
-    // ---------------- CENTRALIZED HELPER ----------------
-
-    private double performBaseArithmetic(
-            Quantity<U> other,
-            ArithmeticOperation operation
-    ) {
-
-        double firstBase =
-                unit.convertToBaseUnit(value);
-
-        double secondBase =
+        double divisor =
                 other.unit.convertToBaseUnit(
                         other.value
                 );
 
-        return operation.compute(
-                firstBase,
-                secondBase
-        );
+        if (Math.abs(divisor) < EPSILON) {
+            throw new ArithmeticException(
+                    "Division by zero"
+            );
+        }
+
+        double dividend =
+                unit.convertToBaseUnit(value);
+
+        return dividend / divisor;
     }
 
-    // ---------------- VALIDATION ----------------
-
-    private void validateArithmeticOperands(
-            Quantity<U> other,
-            U targetUnit,
-            boolean targetUnitRequired
+    // Validation
+    private void validateOperand(
+            Quantity<U> other
     ) {
 
         if (other == null) {
@@ -227,13 +167,6 @@ public class Quantity<U extends IMeasurable> {
                     "Cross-category operation not allowed"
             );
         }
-
-        validateFinite(this.value);
-        validateFinite(other.value);
-
-        if (targetUnitRequired) {
-            validateTargetUnit(targetUnit);
-        }
     }
 
     private void validateTargetUnit(
@@ -247,19 +180,7 @@ public class Quantity<U extends IMeasurable> {
         }
     }
 
-    private void validateFinite(
-            double number
-    ) {
-
-        if (!Double.isFinite(number)) {
-            throw new IllegalArgumentException(
-                    "Value must be finite"
-            );
-        }
-    }
-
-    // ---------------- EQUALITY ----------------
-
+    // Equality
     @Override
     public boolean equals(Object obj) {
 
@@ -296,19 +217,15 @@ public class Quantity<U extends IMeasurable> {
     @Override
     public int hashCode() {
 
-        double baseValue =
+        double base =
                 unit.convertToBaseUnit(value);
 
         return Double.hashCode(
-                roundToTwoDecimals(baseValue)
+                round(base)
         );
     }
 
-    // ---------------- ROUNDING ----------------
-
-    private double roundToTwoDecimals(
-            double value
-    ) {
+    private double round(double value) {
 
         return Math.round(value * 100.0)
                 / 100.0;

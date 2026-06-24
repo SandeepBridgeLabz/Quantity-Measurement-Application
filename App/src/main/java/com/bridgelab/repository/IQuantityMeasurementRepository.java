@@ -1,0 +1,8 @@
+package com.bridgelab.repository;
+
+import com.bridgelab.entity.QuantityMeasurementEntity;
+
+public interface IQuantityMeasurementRepository {
+
+    void save(QuantityMeasurementEntity entity);
+}
